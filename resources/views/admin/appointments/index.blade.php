@@ -101,6 +101,16 @@
                                                         Cancel
                                                     </button>
                                                 </form>
+                                            @elseif($appointment->status === 'completed')
+                                                @if($appointment->invoice)
+                                                    <a href="{{ route('admin.invoices.show', $appointment->invoice->id) }}" class="text-white bg-purple-500 hover:bg-purple-700 font-bold py-1 px-2 rounded text-xs">
+                                                        View Invoice
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('admin.invoices.create', ['appointment_id' => $appointment->id]) }}" class="text-white bg-indigo-500 hover:bg-indigo-700 font-bold py-1 px-2 rounded text-xs">
+                                                        Generate Invoice
+                                                    </a>
+                                                @endif
                                             @else
                                                 <span class="text-gray-500 text-xs">No actions</span>
                                             @endif
