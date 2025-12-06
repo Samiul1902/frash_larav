@@ -34,9 +34,6 @@
                         </x-nav-link>
                     @endif
                     <!-- AI Assistant Link -->
-                    <x-nav-link :href="route('ai.chat')" :active="request()->routeIs('ai.chat')" class="text-purple-600 font-bold">
-                        {{ __('✨ Ask AI') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('ai.image.index')" :active="request()->routeIs('ai.image.index')" class="text-pink-600 font-bold">
                         {{ __('Create Style') }}
                     </x-nav-link>
@@ -95,11 +92,8 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('ai.chat')" :active="request()->routeIs('ai.chat')" class="text-purple-600 font-bold">
-                {{ __('✨ Ask AI') }}
-            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('ai.image.index')" :active="request()->routeIs('ai.image.index')" class="text-pink-600 font-bold">
-                {{ __('🖼️ Nano Banana') }}
+                {{ __('Create Style') }}
             </x-responsive-nav-link>
         </div>
 

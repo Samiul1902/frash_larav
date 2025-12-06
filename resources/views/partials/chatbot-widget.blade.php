@@ -45,8 +45,8 @@
     </div>
 
     <!-- Toggle Button (FAB) -->
-    <button @click="open = !open" class="group flex items-center justify-center w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 focus:outline-none">
-        <span x-show="!open" class="text-2xl">🤖</span>
+    <button @click="open = !open" class="group flex items-center justify-center w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 focus:outline-none overflow-hidden">
+        <img x-show="!open" src="{{ asset('images/c8c893c39689c135fc22ce83be448843_1763439606-removebg-preview.png') }}" class="w-10 h-10 object-contain animate-wiggle" alt="Chatbot">
         <span x-show="open" class="text-xl text-white font-bold" style="display: none;">✕</span>
     </button>
 </div>

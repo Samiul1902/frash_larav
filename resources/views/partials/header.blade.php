@@ -30,7 +30,6 @@
                     <a href="{{ route('services.index') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('services.*') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Services</a>
                     <a href="{{ route('about') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('about') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">About</a>
                     <a href="{{ route('contact') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('contact') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Contact</a>
-                    <a href="{{ route('ai.chat') }}" class="py-4 px-2 font-bold text-purple-600 hover:text-purple-800 transition duration-300">✨ Ask AI</a>
                     <a href="{{ route('ai.image.index') }}" class="py-4 px-2 font-bold text-pink-600 hover:text-pink-800 transition duration-300">Create Style</a>
                 </div>
             </div>
