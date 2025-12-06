@@ -8,7 +8,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $recent_appointments = \App\Models\Appointment::where('user_id', Auth::id())
+        ->with('service', 'staff') // Eager load relationships
+        ->orderBy('start_time', 'desc')
+        ->take(5)
+        ->get();
+
+    return view('dashboard', compact('recent_appointments'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

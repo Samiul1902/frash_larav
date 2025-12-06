@@ -12,4 +12,9 @@ class Staff extends Model
         'bio',
         'is_active',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

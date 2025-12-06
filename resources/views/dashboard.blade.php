@@ -60,10 +60,53 @@
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-bold mb-4">Your Recent Activity</h3>
-                    <p class="text-gray-500 italic">No recent bookings found. Time for a fresh look?</p>
+            <!-- Recent Appointments Table -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-8">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="text-lg font-bold text-gray-800">Your Recent Activity</h3>
+                    <a href="{{ route('appointments.index') }}" class="text-purple-600 hover:text-purple-800 text-sm font-semibold transition">View All &rarr;</a>
+                </div>
+                <div class="p-0">
+                    @if(isset($recent_appointments) && $recent_appointments->count() > 0)
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold">Service</th>
+                                    <th class="px-6 py-4 font-semibold">Staff</th>
+                                    <th class="px-6 py-4 font-semibold">Date</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach($recent_appointments as $appt)
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-6 py-4 text-sm font-bold text-gray-800">
+                                            {{ $appt->service->title }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">
+                                            {{ $appt->staff?->user?->name ?? 'Unassigned' }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">
+                                            {{ $appt->start_time->format('d M, h:i A') }}
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {{ $appt->status == 'confirmed' ? 'bg-green-100 text-green-800' : 
+                                                   ($appt->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                                   ($appt->status == 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800')) }}">
+                                                {{ ucfirst($appt->status) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="p-8 text-center text-gray-500">
+                            <p class="italic">No bookings found yet. Time for a fresh look?</p>
+                            <a href="{{ route('services.index') }}" class="btn btn-sm btn-outline mt-4 text-purple-600 font-bold inline-block">Book Now</a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
