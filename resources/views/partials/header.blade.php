@@ -6,8 +6,14 @@
     <title>{{ config('app.name', 'Smart Salon') }}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
+<body class="bg-gray-50 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
 
 <nav class="bg-white shadow-lg">
     <div class="max-w-6xl mx-auto px-4">
@@ -24,6 +30,8 @@
                     <a href="{{ route('services.index') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('services.*') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Services</a>
                     <a href="{{ route('about') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('about') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">About</a>
                     <a href="{{ route('contact') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('contact') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Contact</a>
+                    <a href="{{ route('ai.chat') }}" class="py-4 px-2 font-bold text-purple-600 hover:text-purple-800 transition duration-300">✨ Ask AI</a>
+                    <a href="{{ route('ai.image.index') }}" class="py-4 px-2 font-bold text-pink-600 hover:text-pink-800 transition duration-300">Create Style</a>
                 </div>
             </div>
             <!-- Secondary Navbar items -->

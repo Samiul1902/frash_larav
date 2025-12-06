@@ -36,11 +36,17 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
+// AI Chat Routes
+Route::get('/ai-chat', [\App\Http\Controllers\AiController::class, 'index'])->name('ai.chat');
+Route::post('/ai-chat/message', [\App\Http\Controllers\AiController::class, 'message'])->name('ai.message');
+
+// AI Image Generation Routes (Nano Banana)
+Route::get('/ai-image', [\App\Http\Controllers\AiImageController::class, 'index'])->name('ai.image.index');
+Route::post('/ai-image', [\App\Http\Controllers\AiImageController::class, 'generate'])->name('ai.image.generate');
+
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);

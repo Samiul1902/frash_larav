@@ -12,9 +12,41 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    @if(Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.services.index')" :active="request()->routeIs('admin.services.*')">
+                            {{ __('Services') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.staff.index')" :active="request()->routeIs('admin.staff.*')">
+                            {{ __('Staff') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.appointments.index')" :active="request()->routeIs('admin.appointments.*')">
+                            {{ __('Bookings') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')">
+                            {{ __('My Bookings') }}
+                        </x-nav-link>
+                    @endif
+                    <!-- AI Assistant Link -->
+                    <x-nav-link :href="route('ai.chat')" :active="request()->routeIs('ai.chat')" class="text-purple-600 font-bold">
+                        {{ __('✨ Ask AI') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('ai.image.index')" :active="request()->routeIs('ai.image.index')" class="text-pink-600 font-bold">
+                        {{ __('Create Style') }}
+                    </x-nav-link>
+                    <!-- Explicit Logout for visibility -->
+                    <form method="POST" action="{{ route('logout') }}" class="flex items-center ml-4">
+                        @csrf
+                        <button type="submit" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-full transition duration-300">
+                            {{ __('Log Out') }}
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -69,6 +101,12 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('ai.chat')" :active="request()->routeIs('ai.chat')" class="text-purple-600 font-bold">
+                {{ __('✨ Ask AI') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('ai.image.index')" :active="request()->routeIs('ai.image.index')" class="text-pink-600 font-bold">
+                {{ __('🖼️ Nano Banana') }}
             </x-responsive-nav-link>
         </div>
 
