@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
+    Route::resource('appointments', \App\Http\Controllers\Admin\AppointmentController::class)->only(['index', 'update']);
 });
 
 require __DIR__.'/auth.php';
