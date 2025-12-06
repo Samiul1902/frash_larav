@@ -13,6 +13,8 @@ class Appointment extends Model
         'start_time',
         'end_time',
         'status',
+        'payment_method',
+        'payment_status',
     ];
 
     protected $casts = [

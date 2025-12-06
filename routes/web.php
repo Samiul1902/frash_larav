@@ -41,6 +41,10 @@ Route::middleware('auth')->group(function () {
 
     // Notification Routes
     Route::post('/notifications/mark-as-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+    // Payment Routes (Stripe)
+    Route::get('/payment/{appointment}', [\App\Http\Controllers\PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::get('/payment/success/handle', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
 });
 
 // Public Routes

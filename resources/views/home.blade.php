@@ -80,7 +80,7 @@
                 Book top-tier salon services with ease. From haircuts to spa treatments, redefine your beauty journey with Smart Salon.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{{ route('services.index') }}" class="px-8 py-4 bg-gray-900 text-white rounded-full font-bold text-lg hover:bg-gray-800 transition transform hover:scale-105 shadow-xl">
+                <a href="{{ route('register') }}" class="px-8 py-4 bg-gray-900 text-white rounded-full font-bold text-lg hover:bg-gray-800 transition transform hover:scale-105 shadow-xl">
                     Book an Appointment
                 </a>
                 <a href="#services" class="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-full font-bold text-lg hover:bg-gray-50 transition transform hover:scale-105 shadow-sm">

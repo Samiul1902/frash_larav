@@ -30,9 +30,10 @@ class AppointmentController extends Controller
      */
     public function create()
     {
+        $branches = \App\Models\Branch::all();
         $services = Service::all();
         $staff = Staff::where('is_active', true)->get();
-        return view('appointments.create', compact('services', 'staff'));
+        return view('appointments.create', compact('branches', 'services', 'staff'));
     }
 
     /**
@@ -45,6 +46,7 @@ class AppointmentController extends Controller
             'staff_id' => 'required|exists:staff,id',
             'appointment_date' => 'required|date|after:now',
             'appointment_time' => 'required',
+            'payment_method' => 'required|in:cash,online',
         ]);
 
         $service = Service::findOrFail($request->service_id);
@@ -77,13 +79,20 @@ class AppointmentController extends Controller
             'start_time' => $start_time,
             'end_time' => $end_time,
             'status' => 'pending',
+            'payment_method' => $request->payment_method,
+            'payment_status' => 'pending',
         ]);
 
         // Notify Admins
         $admins = \App\Models\User::where('role', 'admin')->get();
         \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewAppointment($appointment));
 
-        return redirect()->route('appointments.index')->with('success', 'Appointment booked successfully!');
+        // Redirect based on payment method
+        if ($request->payment_method === 'online') {
+            return redirect()->route('payment.checkout', $appointment->id);
+        }
+
+        return redirect()->route('appointments.index')->with('success', 'Appointment booked successfully! Please pay at the salon.');
     }
 
     /**
