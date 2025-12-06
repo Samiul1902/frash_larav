@@ -34,6 +34,9 @@ Route::middleware('auth')->group(function () {
     // AI Image Generation Routes (Create Style)
     Route::get('/ai-image', [\App\Http\Controllers\AiImageController::class, 'index'])->name('ai.image.index');
     Route::post('/ai-image', [\App\Http\Controllers\AiImageController::class, 'generate'])->name('ai.image.generate');
+
+    // Notification Routes
+    Route::post('/notifications/mark-as-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
 
 // Public Routes

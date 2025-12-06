@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-    protected $fillable = [
-        'title',
-        'description',
-        'price',
-        'duration_minutes',
-    ];
+    protected $fillable = ['title', 'description', 'price', 'duration_minutes', 'is_active', 'image', 'branch_id'];
 
-    public function reviews()
+    public function appointments()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

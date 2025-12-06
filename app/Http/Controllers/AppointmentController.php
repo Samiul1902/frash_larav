@@ -70,7 +70,7 @@ class AppointmentController extends Controller
             return back()->withErrors(['appointment_time' => 'This time slot is already booked for the selected staff member.'])->withInput();
         }
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'user_id' => Auth::id(),
             'service_id' => $request->service_id,
             'staff_id' => $request->staff_id,
@@ -78,6 +78,10 @@ class AppointmentController extends Controller
             'end_time' => $end_time,
             'status' => 'pending',
         ]);
+
+        // Notify Admins
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewAppointment($appointment));
 
         return redirect()->route('appointments.index')->with('success', 'Appointment booked successfully!');
     }

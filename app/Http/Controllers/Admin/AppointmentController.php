@@ -35,6 +35,9 @@ class AppointmentController extends Controller
             'status' => $request->status
         ]);
 
+        // Notify User
+        $appointment->user->notify(new \App\Notifications\AppointmentStatusChanged($appointment));
+
         return redirect()->back()->with('success', 'Appointment status updated successfully.');
     }
 }
