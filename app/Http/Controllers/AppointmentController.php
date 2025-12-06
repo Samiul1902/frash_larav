@@ -13,10 +13,14 @@ use Carbon\Carbon;
 class AppointmentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the user's appointments.
+     * 
+     * @return \Illuminate\View\View
+     * @fr FR-05: Appointment Booking (User History)
      */
     public function index()
     {
+        // FR-05: Fetch authenticated user's appointments
         $appointments = Appointment::where('user_id', Auth::id())
             ->with(['service', 'staff'])
             ->orderBy('start_time', 'desc')
@@ -26,21 +30,33 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the multi-step booking wizard.
+     * 
+     * @return \Illuminate\View\View
+     * @fr FR-05: Appointment Booking (Booking Form)
      */
     public function create()
     {
+        // FR-04: Fetch all branches for selection
         $branches = \App\Models\Branch::all();
+        
+        // Data for dropdowns (filtered dynamically on frontend)
         $services = Service::all();
         $staff = Staff::where('is_active', true)->get();
+        
         return view('appointments.create', compact('branches', 'services', 'staff'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created appointment in storage.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @fr FR-05: Appointment Booking (Submission & Validation)
      */
     public function store(Request $request)
     {
+        // 1. Validate Input
         $request->validate([
             'service_id' => 'required|exists:services,id',
             'staff_id' => 'required|exists:staff,id',
@@ -51,11 +67,12 @@ class AppointmentController extends Controller
 
         $service = Service::findOrFail($request->service_id);
         
-        // Combine date and time
+        // 2. Calculate Start & End Time
         $start_time = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time);
         $end_time = $start_time->copy()->addMinutes($service->duration_minutes);
 
-        // Check availability (FR-3 Validation)
+        // 3. Check for Conflicts (Double Booking Prevention)
+        // FR-06: Slot Availability (Server-side Double Check)
         $conflicts = Appointment::where('staff_id', $request->staff_id)
             ->where(function ($query) use ($start_time, $end_time) {
                 $query->whereBetween('start_time', [$start_time, $end_time])
@@ -72,6 +89,7 @@ class AppointmentController extends Controller
             return back()->withErrors(['appointment_time' => 'This time slot is already booked for the selected staff member.'])->withInput();
         }
 
+        // 4. Create Appointment Record
         $appointment = Appointment::create([
             'user_id' => Auth::id(),
             'service_id' => $request->service_id,
@@ -83,11 +101,13 @@ class AppointmentController extends Controller
             'payment_status' => 'pending',
         ]);
 
-        // Notify Admins
+        // 5. Notify Admins
+        // FR-08: Notifications (New Appointment Alert)
         $admins = \App\Models\User::where('role', 'admin')->get();
         \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewAppointment($appointment));
 
-        // Redirect based on payment method
+        // 6. Handle Payment Flow
+        // FR-07: Payment Processing (Redirect if Online)
         if ($request->payment_method === 'online') {
             return redirect()->route('payment.checkout', $appointment->id);
         }

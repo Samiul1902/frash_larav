@@ -10,19 +10,25 @@ class PaymentController extends Controller
 {
     /**
      * Show the checkout page with Stripe Elements.
+     * 
+     * @param  int  $appointmentId
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * @fr FR-07: Payment Processing (Checkout UI & Intent Creation)
      */
     public function checkout($appointmentId)
     {
         $appointment = Appointment::findOrFail($appointmentId);
         
+        // 1. Prevent double payment
         if ($appointment->payment_status === 'paid') {
             return redirect()->route('dashboard')->with('info', 'This appointment is already paid.');
         }
 
-        // Initialize Stripe
+        // 2. Initialize Stripe API
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // Create PaymentIntent
+        // 3. Create Stripe PaymentIntent
+        // Calculates amount in cents and attaches metadata
         $paymentIntent = \Stripe\PaymentIntent::create([
             'amount' => $appointment->service->price * 100, // Amount in cents (paisa)
             'currency' => 'bdt',
@@ -44,6 +50,10 @@ class PaymentController extends Controller
 
     /**
      * Handle success return from Stripe.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @fr FR-07: Payment Processing (Confirmation & Invoice)
      */
     public function success(Request $request)
     {
@@ -63,11 +73,12 @@ class PaymentController extends Controller
         // In a real production app, verify the payment_intent status with Stripe API here
         // For this demo/task, we assume success if redirected here from Stripe
 
+        // 1. Update Appointment Status
         $appointment->update([
             'payment_status' => 'paid',
         ]);
 
-        // Generate Invoice record if not exists
+        // 2. Generate Invoice
         if (!$appointment->invoice) {
              Invoice::create([
                  'appointment_id' => $appointment->id,

@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 class BranchController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of branches.
+     * @fr FR-04: Branch Management (List View)
      */
     public function index()
     {
@@ -17,7 +18,8 @@ class BranchController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new branch.
+     * @fr FR-04: Branch Management (Create Form)
      */
     public function create()
     {
@@ -25,7 +27,8 @@ class BranchController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created branch in storage.
+     * @fr FR-04: Branch Management (Store Logic)
      */
     public function store(Request $request)
     {
@@ -41,7 +44,8 @@ class BranchController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified branch.
+     * @fr FR-04: Branch Management (Edit Form)
      */
     public function edit(string $id)
     {
@@ -50,7 +54,8 @@ class BranchController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified branch in storage.
+     * @fr FR-04: Branch Management (Update Logic)
      */
     public function update(Request $request, string $id)
     {
@@ -67,7 +72,8 @@ class BranchController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified branch from storage.
+     * @fr FR-04: Branch Management (Delete Logic)
      */
     public function destroy(string $id)
     {

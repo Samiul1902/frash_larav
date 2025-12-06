@@ -14,7 +14,7 @@
                     <div>
                         <h3 class="text-gray-500 text-sm font-bold uppercase tracking-wider mb-2">Quick Actions</h3>
                         <div class="flex flex-col space-y-3">
-                            <a href="{{ route('services.index') }}" class="flex items-center justify-between p-3 bg-purple-50 rounded-xl text-purple-700 font-bold hover:bg-purple-100 transition group">
+                            <a href="{{ route('appointments.create') }}" class="flex items-center justify-between p-3 bg-purple-50 rounded-xl text-purple-700 font-bold hover:bg-purple-100 transition group">
                                 <span>Book Appointment</span>
                                 <span class="group-hover:translate-x-1 transition text-xl">→</span>
                             </a>

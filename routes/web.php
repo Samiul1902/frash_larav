@@ -45,6 +45,9 @@ Route::middleware('auth')->group(function () {
     // Payment Routes (Stripe)
     Route::get('/payment/{appointment}', [\App\Http\Controllers\PaymentController::class, 'checkout'])->name('payment.checkout');
     Route::get('/payment/success/handle', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
+
+    // Slot Availability API (Internal)
+    Route::get('/api/slots', [\App\Http\Controllers\Api\SlotController::class, 'index'])->name('api.slots');
 });
 
 // Public Routes

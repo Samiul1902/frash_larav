@@ -80,12 +80,25 @@
                             
                             <div class="mb-4">
                                 <label class="block text-gray-600 text-sm font-bold mb-2">Date</label>
-                                <input type="date" name="appointment_date" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required min="{{ date('Y-m-d') }}">
+                                <input type="date" id="appointment_date" name="appointment_date" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:bg-gray-100 disabled:text-gray-400" required min="{{ date('Y-m-d') }}" disabled>
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-gray-600 text-sm font-bold mb-2">Time</label>
-                                <input type="time" name="appointment_time" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" required>
+                                <label class="block text-gray-600 text-sm font-bold mb-2">Select Time</label>
+                                
+                                <div id="slots-loading" class="hidden text-center py-4">
+                                    <svg class="animate-spin h-6 w-6 text-purple-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="text-xs text-gray-500 mt-2 block">Finding available slots...</span>
+                                </div>
+
+                                <div id="slots-container" class="grid grid-cols-3 gap-2">
+                                    <p class="text-sm text-gray-400 col-span-3 text-center py-4">Select a stylist and date first.</p>
+                                </div>
+                                <input type="hidden" name="appointment_time" id="appointment_time" required>
+                                <div id="slot-error" class="hidden text-red-500 text-xs mt-2 text-center"></div>
                             </div>
                         </div>
                     </div>
@@ -145,11 +158,81 @@
                     const branchSelect = document.getElementById('branch_id');
                     const serviceSelect = document.getElementById('service_id');
                     const staffSelect = document.getElementById('staff_id');
+                    const dateInput = document.getElementById('appointment_date');
+                    const timeInput = document.getElementById('appointment_time');
                     const priceDisplay = document.getElementById('price-display');
+                    
+                    const slotsContainer = document.getElementById('slots-container');
+                    const slotsLoading = document.getElementById('slots-loading');
+                    const slotError = document.getElementById('slot-error');
 
                     // Store original options
                     const allServices = Array.from(serviceSelect.options).slice(1); // Skip placeholder
                     const allStaff = Array.from(staffSelect.options).slice(1); // Skip placeholder
+
+                    function resetSlots() {
+                        slotsContainer.innerHTML = '<p class="text-sm text-gray-400 col-span-3 text-center py-4">Select a stylist and date first.</p>';
+                        timeInput.value = '';
+                        slotError.classList.add('hidden');
+                    }
+
+                    async function fetchSlots() {
+                        const date = dateInput.value;
+                        const staffId = staffSelect.value;
+                        const serviceId = serviceSelect.value;
+
+                        if (!date || !staffId || !serviceId) {
+                            resetSlots();
+                            return;
+                        }
+
+                        slotsContainer.classList.add('hidden');
+                        slotsLoading.classList.remove('hidden');
+                        slotError.classList.add('hidden');
+
+                        try {
+                            const response = await fetch(`{{ route('api.slots') }}?date=${date}&staff_id=${staffId}&service_id=${serviceId}`);
+                            const data = await response.json();
+
+                            slotsLoading.classList.add('hidden');
+                            slotsContainer.classList.remove('hidden');
+                            slotsContainer.innerHTML = '';
+
+                            if (data.slots && data.slots.length > 0) {
+                                data.slots.forEach(slot => {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = 'py-2 px-3 rounded-lg border border-gray-200 text-sm font-medium hover:border-purple-500 hover:bg-purple-50 focus:bg-purple-600 focus:text-white focus:border-purple-600 transition';
+                                    btn.textContent = slot; // Format like 10:00
+                                    
+                                    btn.addEventListener('click', function() {
+                                        // Reset other buttons
+                                        slotsContainer.querySelectorAll('button').forEach(b => {
+                                            b.classList.remove('bg-purple-600', 'text-white', 'border-purple-600');
+                                            b.classList.add('hover:bg-purple-50', 'text-gray-800', 'border-gray-200');
+                                        });
+                                        
+                                        // Highlight this button
+                                        this.classList.remove('hover:bg-purple-50', 'text-gray-800', 'border-gray-200');
+                                        this.classList.add('bg-purple-600', 'text-white', 'border-purple-600');
+                                        
+                                        // Set input value
+                                        timeInput.value = slot;
+                                    });
+
+                                    slotsContainer.appendChild(btn);
+                                });
+                            } else {
+                                slotsContainer.innerHTML = '<p class="text-sm text-red-400 col-span-3 text-center py-4">No slots available for this date.</p>';
+                            }
+
+                        } catch (error) {
+                            console.error('Error fetching slots:', error);
+                            slotsLoading.classList.add('hidden');
+                            slotError.textContent = 'Failed to load slots. Please try again.';
+                            slotError.classList.remove('hidden');
+                        }
+                    }
 
                     branchSelect.addEventListener('change', function() {
                         const branchId = this.value;
@@ -157,11 +240,15 @@
                         // Reset and Disable/Enable Dropdowns
                         serviceSelect.innerHTML = '<option value="">-- Choose a Service --</option>';
                         staffSelect.innerHTML = '<option value="">-- Choose a Stylist --</option>';
-                        priceDisplay.textContent = '';
+                        priceDisplay.textContent = ''; // Reset price
+                        dateInput.disabled = true; // Disable date initially
+                        dateInput.value = ''; // Reset date
+                        resetSlots(); // Reset slots
                         
                         if (branchId) {
                             serviceSelect.disabled = false;
                             staffSelect.disabled = false;
+                            dateInput.disabled = false; // Enable date
 
                             // Filter Services
                             const filteredServices = allServices.filter(opt => opt.getAttribute('data-branch-id') == branchId || !opt.getAttribute('data-branch-id'));
@@ -185,9 +272,13 @@
                             staffSelect.innerHTML = '<option value="">-- First Select a Branch --</option>';
                             serviceSelect.disabled = true;
                             staffSelect.disabled = true;
+                            dateInput.disabled = true;
                         }
                     });
 
+                    // Trigger Slot Fetching Logic
+                    dateInput.addEventListener('change', fetchSlots);
+                    staffSelect.addEventListener('change', fetchSlots);
                     serviceSelect.addEventListener('change', function() {
                         const selectedOption = this.options[this.selectedIndex];
                         const price = selectedOption.getAttribute('data-price');
@@ -195,6 +286,11 @@
                             priceDisplay.textContent = '(৳' + price + ')';
                         } else {
                             priceDisplay.textContent = '';
+                        }
+                        
+                        // Also fetch slots if date and staff are selected (service impacts duration)
+                        if (dateInput.value && staffSelect.value) {
+                            fetchSlots();
                         }
                     });
                 </script>

@@ -10,7 +10,8 @@ use App\Models\Service;
 class ServiceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of services.
+     * @fr FR-02: Service Management (List View)
      */
     public function index()
     {
@@ -19,7 +20,8 @@ class ServiceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new service.
+     * @fr FR-02: Service Management (Create Form)
      */
     public function create()
     {
@@ -27,7 +29,8 @@ class ServiceController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created service in storage.
+     * @fr FR-02: Service Management (Store Logic)
      */
     public function store(Request $request)
     {
@@ -61,7 +64,8 @@ class ServiceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified service.
+     * @fr FR-02: Service Management (Edit Form)
      */
     public function edit(string $id)
     {
@@ -70,7 +74,8 @@ class ServiceController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified service in storage.
+     * @fr FR-02: Service Management (Update Logic)
      */
     public function update(Request $request, string $id)
     {
@@ -101,7 +106,8 @@ class ServiceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified service from storage.
+     * @fr FR-02: Service Management (Delete Logic)
      */
     public function destroy(string $id)
     {

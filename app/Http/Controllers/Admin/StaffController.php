@@ -10,7 +10,8 @@ use App\Models\Staff;
 class StaffController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of staff members.
+     * @fr FR-03: Staff Management (List View)
      */
     public function index()
     {
@@ -19,7 +20,8 @@ class StaffController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new staff member.
+     * @fr FR-03: Staff Management (Create Form)
      */
     public function create()
     {
@@ -28,7 +30,8 @@ class StaffController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created staff member in storage.
+     * @fr FR-03: Staff Management (Store Logic)
      */
     public function store(Request $request)
     {
@@ -53,7 +56,8 @@ class StaffController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified staff member.
+     * @fr FR-03: Staff Management (Edit Form)
      */
     public function edit(string $id)
     {
@@ -63,7 +67,8 @@ class StaffController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified staff member in storage.
+     * @fr FR-03: Staff Management (Update Logic)
      */
     public function update(Request $request, string $id)
     {
@@ -81,7 +86,8 @@ class StaffController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified staff member from storage.
+     * @fr FR-03: Staff Management (Delete Logic)
      */
     public function destroy(string $id)
     {
