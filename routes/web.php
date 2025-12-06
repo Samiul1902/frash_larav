@@ -15,7 +15,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Booking Routes
+    Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store']);
 });
+
+// Public Routes
+Route::get('/services', function () {
+    $services = \App\Models\Service::all();
+    return view('services', compact('services'));
+})->name('services.index');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
