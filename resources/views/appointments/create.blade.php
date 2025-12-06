@@ -23,7 +23,7 @@
             <select name="service_id" id="service_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 <option value="">-- Choose a Service --</option>
                 @foreach($services as $service)
-                    <option value="{{ $service->id }}">{{ $service->title }} (${{ $service->price }} - {{ $service->duration_minutes }} mins)</option>
+                    <option value="{{ $service->id }}">{{ $service->title }} (৳{{ $service->price }} - {{ $service->duration_minutes }} mins)</option>
                 @endforeach
             </select>
         </div>

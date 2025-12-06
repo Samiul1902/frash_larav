@@ -14,7 +14,7 @@
                     <p class="text-gray-600 mb-4">{{ Str::limit($service->description, 100) }}</p>
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-2xl font-bold text-blue-600">${{ $service->price }}</span>
+                            <span class="text-2xl font-bold text-blue-600">৳{{ $service->price }}</span>
                             <span class="text-sm text-gray-500 block">{{ $service->duration_minutes }} mins</span>
                         </div>
                         <a href="{{ route('appointments.create') }}?service_id={{ $service->id }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
