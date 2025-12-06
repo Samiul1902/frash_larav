@@ -12,6 +12,16 @@
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $service->title }}</h3>
                     <p class="text-gray-600 mb-4">{{ Str::limit($service->description, 100) }}</p>
+                    
+                    @if($service->reviews->count() > 0)
+                        <div class="mb-4 flex items-center">
+                            <span class="text-yellow-500 mr-1">&#9733;</span>
+                            <span class="font-bold text-gray-700">{{ number_format($service->reviews->avg('rating'), 1) }}</span>
+                            <span class="text-gray-500 text-xs ml-1">({{ $service->reviews->count() }} reviews)</span>
+                        </div>
+                    @else
+                        <div class="mb-4 text-gray-400 text-xs">No reviews yet</div>
+                    @endif
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="text-2xl font-bold text-blue-600">৳{{ $service->price }}</span>

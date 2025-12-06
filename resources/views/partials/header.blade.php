@@ -19,12 +19,11 @@
                         <span class="font-semibold text-gray-500 text-lg">Smart Salon</span>
                     </a>
                 </div>
-                <!-- Primary Navbar items -->
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="{{ url('/') }}" class="py-4 px-2 text-blue-500 border-b-4 border-blue-500 font-semibold ">Home</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Services</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">About</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Contact</a>
+                    <a href="{{ url('/') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->is('/') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Home</a>
+                    <a href="{{ route('services.index') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('services.*') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Services</a>
+                    <a href="{{ route('about') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('about') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">About</a>
+                    <a href="{{ route('contact') }}" class="py-4 px-2 font-semibold transition duration-300 {{ request()->routeIs('contact') ? 'text-blue-500 border-b-4 border-blue-500' : 'text-gray-500 hover:text-blue-500' }}">Contact</a>
                 </div>
             </div>
             <!-- Secondary Navbar items -->

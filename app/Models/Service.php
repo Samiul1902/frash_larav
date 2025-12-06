@@ -12,4 +12,9 @@ class Service extends Model
         'price',
         'duration_minutes',
     ];
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

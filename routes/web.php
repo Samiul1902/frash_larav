@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
 
     // Booking Routes
     Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store']);
+    // Review Routes
+    Route::resource('reviews', \App\Http\Controllers\ReviewController::class)->only(['create', 'store']);
 });
 
 // Public Routes
@@ -25,6 +27,14 @@ Route::get('/services', function () {
     $services = \App\Models\Service::all();
     return view('services', compact('services'));
 })->name('services.index');
+
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

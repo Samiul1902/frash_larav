@@ -45,12 +45,22 @@
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <span class="relative inline-block px-3 py-1 font-semibold leading-tight 
                                 {{ $appointment->status === 'confirmed' ? 'text-green-900' : 
-                                   ($appointment->status === 'pending' ? 'text-yellow-900' : 'text-red-900') }}">
+                                   ($appointment->status === 'pending' ? 'text-yellow-900' : 
+                                   ($appointment->status === 'completed' ? 'text-blue-900' : 'text-red-900')) }}">
                                 <span aria-hidden class="absolute inset-0 opacity-50 rounded-full 
                                     {{ $appointment->status === 'confirmed' ? 'bg-green-200' : 
-                                       ($appointment->status === 'pending' ? 'bg-yellow-200' : 'bg-red-200') }}"></span>
+                                       ($appointment->status === 'pending' ? 'bg-yellow-200' : 
+                                       ($appointment->status === 'completed' ? 'bg-blue-200' : 'bg-red-200')) }}"></span>
                                 <span class="relative">{{ ucfirst($appointment->status) }}</span>
                             </span>
+                            
+                            @if($appointment->status === 'completed')
+                                <div class="mt-2">
+                                    <a href="{{ route('reviews.create', ['appointment_id' => $appointment->id]) }}" class="text-xs text-blue-500 hover:text-blue-700 underline">
+                                        Leave a Review
+                                    </a>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @empty
