@@ -40,13 +40,6 @@
                     <x-nav-link :href="route('ai.image.index')" :active="request()->routeIs('ai.image.index')" class="text-pink-600 font-bold">
                         {{ __('Create Style') }}
                     </x-nav-link>
-                    <!-- Explicit Logout for visibility -->
-                    <form method="POST" action="{{ route('logout') }}" class="flex items-center ml-4">
-                        @csrf
-                        <button type="submit" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-full transition duration-300">
-                            {{ __('Log Out') }}
-                        </button>
-                    </form>
                 </div>
             </div>
 
@@ -76,7 +69,7 @@
 
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                                                this.closest('form').submit();" class="text-red-600 font-semibold">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
