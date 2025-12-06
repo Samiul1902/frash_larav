@@ -36,9 +36,18 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'duration_minutes' => 'required|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
-        Service::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('services', 'public');
+            $data['image'] = $path;
+        }
+
+        Service::create($data);
 
         return redirect()->route('admin.services.index')->with('success', 'Service created successfully.');
     }
@@ -70,10 +79,23 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'duration_minutes' => 'required|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         $service = Service::findOrFail($id);
-        $service->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($service->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($service->image);
+            }
+            $path = $request->file('image')->store('services', 'public');
+            $data['image'] = $path;
+        }
+
+        $service->update($data);
 
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');
     }

@@ -12,7 +12,8 @@ class BranchController extends Controller
      */
     public function index()
     {
-        //
+        $branches = \App\Models\Branch::all();
+        return view('admin.branches.index', compact('branches'));
     }
 
     /**
@@ -20,7 +21,7 @@ class BranchController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.branches.create');
     }
 
     /**
@@ -28,15 +29,15 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        \App\Models\Branch::create($request->all());
+
+        return redirect()->route('admin.branches.index')->with('success', 'Branch created successfully.');
     }
 
     /**
@@ -44,7 +45,8 @@ class BranchController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $branch = \App\Models\Branch::findOrFail($id);
+        return view('admin.branches.edit', compact('branch'));
     }
 
     /**
@@ -52,7 +54,16 @@ class BranchController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $branch = \App\Models\Branch::findOrFail($id);
+        $branch->update($request->all());
+
+        return redirect()->route('admin.branches.index')->with('success', 'Branch updated successfully.');
     }
 
     /**
@@ -60,6 +71,9 @@ class BranchController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $branch = \App\Models\Branch::findOrFail($id);
+        $branch->delete();
+
+        return redirect()->route('admin.branches.index')->with('success', 'Branch deleted successfully.');
     }
 }

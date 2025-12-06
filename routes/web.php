@@ -46,7 +46,8 @@ Route::get('/services', function () {
 })->name('services.index');
 
 Route::get('/about', function () {
-    return view('about');
+    $branches = \App\Models\Branch::all();
+    return view('about', compact('branches'));
 })->name('about');
 
 Route::get('/contact', function () {
@@ -59,6 +60,7 @@ Route::get('/contact', function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
     Route::resource('appointments', \App\Http\Controllers\Admin\AppointmentController::class)->only(['index', 'update']);

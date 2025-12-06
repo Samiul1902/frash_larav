@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->string('image')->nullable()->after('description');
-            $table->foreignId('branch_id')->nullable()->after('image')->constrained()->nullOnDelete();
+            if (!Schema::hasColumn('services', 'image')) {
+                $table->string('image')->nullable()->after('description');
+            }
+            if (!Schema::hasColumn('services', 'branch_id')) {
+                $table->foreignId('branch_id')->nullable()->after('image')->constrained('branches')->nullOnDelete();
+            }
         });
     }
 
