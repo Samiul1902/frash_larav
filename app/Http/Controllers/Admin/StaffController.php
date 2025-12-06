@@ -23,7 +23,8 @@ class StaffController extends Controller
      */
     public function create()
     {
-        return view('admin.staff.create');
+        $branches = \App\Models\Branch::all();
+        return view('admin.staff.create', compact('branches'));
     }
 
     /**
@@ -35,6 +36,7 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'bio' => 'nullable|string',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         Staff::create($request->all());
@@ -56,7 +58,8 @@ class StaffController extends Controller
     public function edit(string $id)
     {
         $staff = Staff::findOrFail($id);
-        return view('admin.staff.edit', compact('staff'));
+        $branches = \App\Models\Branch::all();
+        return view('admin.staff.edit', compact('staff', 'branches'));
     }
 
     /**
@@ -68,6 +71,7 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'bio' => 'nullable|string',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         $staff = Staff::findOrFail($id);

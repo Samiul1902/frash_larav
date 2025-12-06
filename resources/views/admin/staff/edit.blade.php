@@ -26,6 +26,16 @@
                             <label for="bio" class="block text-gray-700 text-sm font-bold mb-2">Bio:</label>
                             <textarea name="bio" id="bio" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ $staff->bio }}</textarea>
                         </div>
+
+                        <div class="mb-4">
+                            <label for="branch_id" class="block text-gray-700 text-sm font-bold mb-2">Assign Branch:</label>
+                            <select name="branch_id" id="branch_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="" {{ is_null($staff->branch_id) ? 'selected' : '' }}>No Branch (Freelance/Roaming)</option>
+                                @foreach($branches as $branch)
+                                    <option value="{{ $branch->id }}" {{ $staff->branch_id == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Status:</label>

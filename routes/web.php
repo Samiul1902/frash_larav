@@ -4,7 +4,11 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    $featured_services = \App\Models\Service::take(4)->get();
+    $reviews = \App\Models\Review::with('user')->orderBy('rating', 'desc')->take(3)->get();
+    $branches = \App\Models\Branch::all();
+    
+    return view('home', compact('featured_services', 'reviews', 'branches'));
 });
 
 Route::get('/dashboard', function () {
