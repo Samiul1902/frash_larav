@@ -20,6 +20,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store']);
     // Review Routes
     Route::resource('reviews', \App\Http\Controllers\ReviewController::class)->only(['create', 'store']);
+
+    // AI Chat Routes
+    Route::get('/ai-chat', [\App\Http\Controllers\AiController::class, 'index'])->name('ai.chat');
+    Route::post('/ai-chat/message', [\App\Http\Controllers\AiController::class, 'message'])->name('ai.message');
+
+    // AI Image Generation Routes (Create Style)
+    Route::get('/ai-image', [\App\Http\Controllers\AiImageController::class, 'index'])->name('ai.image.index');
+    Route::post('/ai-image', [\App\Http\Controllers\AiImageController::class, 'generate'])->name('ai.image.generate');
 });
 
 // Public Routes
@@ -36,13 +44,7 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-// AI Chat Routes
-Route::get('/ai-chat', [\App\Http\Controllers\AiController::class, 'index'])->name('ai.chat');
-Route::post('/ai-chat/message', [\App\Http\Controllers\AiController::class, 'message'])->name('ai.message');
-
-// AI Image Generation Routes (Nano Banana)
-Route::get('/ai-image', [\App\Http\Controllers\AiImageController::class, 'index'])->name('ai.image.index');
-Route::post('/ai-image', [\App\Http\Controllers\AiImageController::class, 'generate'])->name('ai.image.generate');
+// Public Routes
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
