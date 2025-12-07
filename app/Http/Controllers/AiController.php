@@ -41,8 +41,8 @@ class AiController extends Controller
         $context .= "Answer politely and concisely directly to the customer.";
 
         // 2. Call Gemini API
-        // Use env var first, fallback to hardcoded key (for immediate testing without restart)
-        $apiKey = env('GEMINI_API_KEY', 'AIzaSyBb8ZuG7hbAnI8N75R6aHufEOUM0cUPzL8');
+        // Use env var first, fallback to empty string (security)
+        $apiKey = env('GEMINI_API_KEY', '');
         
         if (!$apiKey) {
             return response()->json(['response' => "I'm sorry, I'm not fully configured yet (Missing API Key)."]);
@@ -50,7 +50,7 @@ class AiController extends Controller
 
         $response = Http::withoutVerifying()->withHeaders([
             'Content-Type' => 'application/json',
-        ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", [
+        ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
             'contents' => [
                 [
                     'parts' => [
