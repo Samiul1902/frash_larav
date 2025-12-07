@@ -53,24 +53,24 @@ class AiImageController extends Controller
             }
         }
 
-        // Generate Image using Imagen 3
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key={$apiKey}";
-
-        $response = Http::withoutVerifying()->withHeaders([
-            'Content-Type' => 'application/json',
-        ])->post($url, [
-            'instances' => [['prompt' => $prompt]],
-            'parameters' => ['sampleCount' => 1]
-        ]);
-
-        if ($response->successful()) {
-            $data = $response->json();
-            if (isset($data['predictions'][0]['bytesBase64Encoded'])) {
-                $image = $data['predictions'][0]['bytesBase64Encoded'];
-                return view('ai.image', ['image' => $image, 'prompt' => $request->input('prompt'), 'refined_prompt' => $prompt]);
-            }
-        }
+        // Generate Image using Pollinations.ai (Reliable Free Alternative)
+        // Since Google's free tier has limitations on image models, we use Pollinations for guaranteed results.
         
-        return back()->with('error', 'Create Style Error: ' . $response->body());
+        $encodedPrompt = urlencode($prompt);
+        $imageUrl = "https://image.pollinations.ai/prompt/{$encodedPrompt}?width=1024&height=1024&seed=" . rand(1, 10000) . "&model=flux";
+
+        try {
+            // Fetch the image content
+            $imageContent = file_get_contents($imageUrl);
+            
+            if ($imageContent !== false) {
+                $base64Image = base64_encode($imageContent);
+                return view('ai.image', ['image' => $base64Image, 'prompt' => $request->input('prompt'), 'refined_prompt' => $prompt]);
+            } else {
+                return back()->with('error', 'Failed to retrieve image from generator.');
+            }
+        } catch (\Exception $e) {
+             return back()->with('error', 'Generation Error: ' . $e->getMessage());
+        }
     }
 }
