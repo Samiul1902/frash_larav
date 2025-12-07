@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Stats & Quick Actions Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <!-- Quick Actions -->
@@ -77,9 +77,9 @@
                     <h3 class="text-lg font-bold text-gray-800">Your Recent Activity</h3>
                     <a href="{{ route('appointments.index') }}" class="text-purple-600 hover:text-purple-800 text-sm font-semibold transition">View All &rarr;</a>
                 </div>
-                <div class="p-0">
+                <div class="p-0 overflow-x-auto">
                     @if(isset($recent_appointments) && $recent_appointments->count() > 0)
-                        <table class="w-full text-left">
+                        <table class="w-full text-left min-w-[600px]">
                             <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4 font-semibold">Service</th>

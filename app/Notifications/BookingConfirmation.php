@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AppointmentStatusChanged extends Notification
+class BookingConfirmation extends Notification
 {
     use Queueable;
 
@@ -35,12 +35,13 @@ class AppointmentStatusChanged extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('Appointment Status Update')
-                    ->greeting('Hello, ' . $notifiable->name)
-                    ->line('Your appointment status has changed.')
+                    ->subject('Appointment Confirmed')
+                    ->greeting('Hello, ' . $notifiable->name . '!')
+                    ->line('Your appointment has been successfully booked.')
                     ->line('Service: ' . $this->appointment->service->title)
-                    ->line('New Status: ' . ucfirst($this->appointment->status))
-                    ->action('Check Status', route('appointments.index'))
+                    ->line('Date: ' . $this->appointment->start_time->format('F d, Y'))
+                    ->line('Time: ' . $this->appointment->start_time->format('h:i A'))
+                    ->action('View Appointment', route('appointments.index'))
                     ->line('Thank you for choosing us!');
     }
 
@@ -52,9 +53,7 @@ class AppointmentStatusChanged extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'Your booking for ' . $this->appointment->service->title . ' has been ' . ucfirst($this->appointment->status),
-            'appointment_id' => $this->appointment->id,
-            'link' => route('appointments.index'),
+            //
         ];
     }
 }

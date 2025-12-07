@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AppointmentStatusChanged extends Notification
+class AppointmentReminder extends Notification
 {
     use Queueable;
 
@@ -35,13 +35,13 @@ class AppointmentStatusChanged extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('Appointment Status Update')
+                    ->subject('Appointment Reminder')
                     ->greeting('Hello, ' . $notifiable->name)
-                    ->line('Your appointment status has changed.')
+                    ->line('This is a reminder for your upcoming appointment.')
                     ->line('Service: ' . $this->appointment->service->title)
-                    ->line('New Status: ' . ucfirst($this->appointment->status))
-                    ->action('Check Status', route('appointments.index'))
-                    ->line('Thank you for choosing us!');
+                    ->line('Time: Tomorrow at ' . $this->appointment->start_time->format('h:i A'))
+                    ->action('View Details', route('appointments.index'))
+                    ->line('We look forward to seeing you!');
     }
 
     /**
@@ -52,7 +52,7 @@ class AppointmentStatusChanged extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'Your booking for ' . $this->appointment->service->title . ' has been ' . ucfirst($this->appointment->status),
+            'message' => 'Reminder: You have an appointment tomorrow for ' . $this->appointment->service->title,
             'appointment_id' => $this->appointment->id,
             'link' => route('appointments.index'),
         ];

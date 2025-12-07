@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-bold text-gray-800">History</h3>
                 <a href="{{ route('appointments.create') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
@@ -22,8 +22,9 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
-                <table class="min-w-full leading-normal">
+            <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full leading-normal">
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-100">
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Service</th>
@@ -107,6 +108,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
             <div class="mt-4">
                 {{-- Pagination Links could go here if implemented --}}

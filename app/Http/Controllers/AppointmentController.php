@@ -156,6 +156,9 @@ class AppointmentController extends Controller
         $admins = \App\Models\User::where('role', 'admin')->get();
         \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewAppointment($appointment));
 
+        // Notify User
+        $appointment->user->notify(new \App\Notifications\BookingConfirmation($appointment));
+
         // 6. Handle Payment Flow
         // FR-07: Payment Processing (Redirect if Online)
         if ($request->payment_method === 'online') {
