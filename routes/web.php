@@ -58,6 +58,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/{appointment}', [\App\Http\Controllers\PaymentController::class, 'checkout'])->name('payment.checkout');
     Route::get('/payment/success/handle', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
 
+    // SSLCommerz Routes
+    Route::post('/payment/sslcommerz/pay/{appointment}', [\App\Http\Controllers\PaymentController::class, 'payWithSslCommerz'])->name('payment.sslcommerz.pay');
+    Route::post('/payment/sslcommerz/success', [\App\Http\Controllers\PaymentController::class, 'sslCommerzSuccess'])->name('payment.sslcommerz.success');
+    Route::post('/payment/sslcommerz/fail', [\App\Http\Controllers\PaymentController::class, 'sslCommerzFail'])->name('payment.sslcommerz.fail');
+    Route::post('/payment/sslcommerz/cancel', [\App\Http\Controllers\PaymentController::class, 'sslCommerzCancel'])->name('payment.sslcommerz.cancel');
+    Route::post('/payment/sslcommerz/ipn', [\App\Http\Controllers\PaymentController::class, 'sslCommerzIpn'])->name('payment.sslcommerz.ipn');
+
     // Slot Availability API (Internal)
     Route::get('/api/slots', [\App\Http\Controllers\Api\SlotController::class, 'index'])->name('api.slots');
 });

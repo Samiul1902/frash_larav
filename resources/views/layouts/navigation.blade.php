@@ -77,7 +77,7 @@
                             <div class="max-h-64 overflow-y-auto">
                                 @forelse(Auth::user()->unreadNotifications as $notification)
                                     <a href="{{ $notification->data['link'] ?? '#' }}" class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-100 last:border-0">
-                                        <p class="text-sm text-gray-800">{{ $notification->data['message'] }}</p>
+                                        <p class="text-sm text-gray-800">{{ $notification->data['message'] ?? 'New Notification' }}</p>
                                         <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                     </a>
                                 @empty
