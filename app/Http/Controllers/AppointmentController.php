@@ -126,17 +126,91 @@ class AppointmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    /**
+     * Show the form for editing the specified resource.
+     * 
+     * @param  \App\Models\Appointment  $appointment
+     * @return \Illuminate\View\View
+     */
+    public function edit(Appointment $appointment)
     {
-        //
+        // Ensure user owns the appointment
+        if ($appointment->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Only allow status pending or confirmed
+        if (!in_array($appointment->status, ['pending', 'confirmed'])) {
+            return redirect()->route('appointments.index')->with('error', 'You cannot reschedule this appointment.');
+        }
+
+        $branches = \App\Models\Branch::all();
+        $services = Service::all();
+        $staff = Staff::where('is_active', true)->get();
+
+        return view('appointments.edit', compact('appointment', 'branches', 'services', 'staff'));
     }
 
     /**
      * Update the specified resource in storage.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Appointment  $appointment
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Appointment $appointment)
     {
-        //
+        if ($appointment->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'appointment_date' => 'required|date|after:now',
+            'appointment_time' => 'required',
+            'staff_id' => 'required|exists:staff,id', // Allow changing staff
+        ]);
+
+        $service = $appointment->service; // Service usually stays the same for reschedule
+        
+        // Calculate new times
+        $start_time = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time);
+        $end_time = $start_time->copy()->addMinutes($service->duration_minutes);
+
+        // Check for conflicts (excluding current appointment)
+        $conflicts = Appointment::where('staff_id', $request->staff_id)
+            ->where('id', '!=', $appointment->id)
+            ->where(function ($query) use ($start_time, $end_time) {
+                $query->whereBetween('start_time', [$start_time, $end_time])
+                      ->orWhereBetween('end_time', [$start_time, $end_time])
+                      ->orWhere(function ($q) use ($start_time, $end_time) {
+                          $q->where('start_time', '<', $start_time)
+                            ->where('end_time', '>', $end_time);
+                      });
+            })
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        if ($conflicts) {
+            return back()->withErrors(['appointment_time' => 'This time slot is already booked.'])->withInput();
+        }
+
+        $appointment->update([
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'staff_id' => $request->staff_id,
+            'status' => 'pending', // Reset to pending if rescheduled? Or keep confirmed? Let's keep existing status or reset to pending if major change. For now, keep as is or set to pending. Let's set to pending to be safe.
+        ]);
+
+        // Notify Admin
+        $admin = \App\Models\User::where('role', 'admin')->first();
+        if ($admin) {
+            $admin->notify(new \App\Notifications\AppointmentRescheduled($appointment));
+        }
+
+        // Notify User
+        $appointment->user->notify(new \App\Notifications\AppointmentRescheduled($appointment));
+
+        return redirect()->route('appointments.index')->with('success', 'Appointment rescheduled successfully.');
     }
 
     /**
@@ -145,5 +219,27 @@ class AppointmentController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    /**
+     * Cancel the specified appointment.
+     * 
+     * @param  \App\Models\Appointment  $appointment
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function cancel(Appointment $appointment)
+    {
+        // Ensure the authenticated user owns the appointment
+        if ($appointment->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Only allow cancellation if status is pending or confirmed
+        if (!in_array($appointment->status, ['pending', 'confirmed'])) {
+            return back()->with('error', 'You cannot cancel an appointment that is already ' . $appointment->status . '.');
+        }
+
+        $appointment->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'Appointment cancelled successfully.');
     }
 }

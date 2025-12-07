@@ -27,7 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Booking Routes
-    Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store']);
+    Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::patch('/appointments/{appointment}/cancel', [\App\Http\Controllers\AppointmentController::class, 'cancel'])->name('appointments.cancel');
     // Review Routes
     Route::resource('reviews', \App\Http\Controllers\ReviewController::class)->only(['create', 'store']);
 

@@ -31,6 +31,7 @@
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date & Time</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Duration</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -68,6 +69,24 @@
                                                 Leave a Review
                                             </a>
                                         </div>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-5 bg-white text-sm">
+                                    @if(in_array($appointment->status, ['pending', 'confirmed']))
+                                        <div class="flex space-x-2">
+                                            <a href="{{ route('appointments.edit', $appointment->id) }}" class="text-blue-600 hover:text-blue-900 font-bold text-xs bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded transition">
+                                                Reschedule
+                                            </a>
+                                            <form action="{{ route('appointments.cancel', $appointment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="text-red-600 hover:text-red-900 font-bold text-xs bg-red-100 hover:bg-red-200 px-3 py-1 rounded transition">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-xs italic">N/A</span>
                                     @endif
                                 </td>
                             </tr>
