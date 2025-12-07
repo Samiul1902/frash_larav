@@ -31,9 +31,22 @@ class AppointmentController extends Controller
         ]);
 
         $appointment = Appointment::findOrFail($id);
+        $previousStatus = $appointment->status;
+
         $appointment->update([
             'status' => $request->status
         ]);
+
+        // Loyalty Points Earning Logic
+        if ($previousStatus !== 'completed' && $request->status === 'completed') {
+             $pointsEarned = \App\Models\Setting::getValue('loyalty_earn_rate', 10);
+             $appointment->user->increment('loyalty_points', $pointsEarned);
+             $appointment->user->loyaltyTransactions()->create([
+                 'points' => $pointsEarned,
+                 'type' => 'earned',
+                 'description' => 'Earned from appointment #' . $appointment->id,
+             ]);
+        }
 
         // Notify User
         $appointment->user->notify(new \App\Notifications\AppointmentStatusChanged($appointment));

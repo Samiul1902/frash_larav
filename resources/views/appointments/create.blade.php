@@ -147,11 +147,39 @@
                         </div>
                     </div>
 
+                    <!-- Loyalty Points Redemption -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mt-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center justify-between">
+                            Loyalty Points
+                            <span class="text-sm font-normal text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
+                                Balance: {{ Auth::user()->loyalty_points }} pts
+                            </span>
+                        </h3>
+                        
+                        @if(Auth::user()->loyalty_points > 0)
+                            <div class="mt-4">
+                                <label for="redeem_points" class="block text-sm font-medium text-gray-700">
+                                    Redeem Points (Max: {{ Auth::user()->loyalty_points }} pts)
+                                    <span class="text-xs text-gray-400 block">1 Point = {{ \App\Models\Setting::getValue('loyalty_redeem_value', 10) }} Tk</span>
+                                </label>
+                                <div class="mt-1 flex rounded-md shadow-sm">
+                                    <input type="number" name="redeem_points" id="redeem_points" min="0" max="{{ Auth::user()->loyalty_points }}" placeholder="Enter points to redeem"
+                                        class="focus:ring-purple-500 focus:border-purple-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
+                                </div>
+                                <p id="savings-display" class="text-sm text-green-600 font-bold mt-2 hidden">Savings: <span id="savings-amount">0</span> Tk</p>
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-500 italic">Play more to earn discount! You need at least 1 point to redeem.</p>
+                        @endif
+                    </div>
+
                     <div class="flex items-center justify-end mt-8 border-t border-gray-100 pt-6">
-                        <button class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105" type="submit">
+                        <button id="submit-btn" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105" type="submit">
                             Confirm Booking <span id="price-display"></span>
                         </button>
                     </div>
+
+                    <!-- Script moved to main block below to share scope -->
                 </form>
 
                 <script>
@@ -276,23 +304,69 @@
                         }
                     });
 
-                    // Trigger Slot Fetching Logic
-                    dateInput.addEventListener('change', fetchSlots);
-                    staffSelect.addEventListener('change', fetchSlots);
-                    serviceSelect.addEventListener('change', function() {
-                        const selectedOption = this.options[this.selectedIndex];
-                        const price = selectedOption.getAttribute('data-price');
-                        if (price) {
-                            priceDisplay.textContent = '(৳' + price + ')';
+                    // Shared Logic for Price Calculation
+                    function updatePricing() {
+                        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                        const basePrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                        const redeemInput = document.getElementById('redeem_points');
+                        const savingsDisplay = document.getElementById('savings-display');
+                        const savingsAmount = document.getElementById('savings-amount');
+                        
+                        // Get current points
+                        const points = redeemInput ? (parseInt(redeemInput.value) || 0) : 0;
+                        const redeemValue = {{ \App\Models\Setting::getValue('loyalty_redeem_value', 10) }};
+                        
+                        let savings = points * redeemValue;
+                        
+                        // Cap savings at base price
+                        if (savings > basePrice) {
+                            savings = basePrice;
+                        }
+
+                        // Update Savings UI
+                        if (redeemInput && savings > 0) {
+                            savingsDisplay.classList.remove('hidden');
+                            savingsAmount.textContent = savings;
+                        } else if (redeemInput) {
+                            savingsDisplay.classList.add('hidden');
+                        }
+
+                        // Update Button Price
+                        if (basePrice > 0) {
+                            const finalPrice = basePrice - savings;
+                            priceDisplay.textContent = '(৳' + finalPrice.toFixed(2) + ')';
+                            
+                            // Visual cue if discounted
+                            if (savings > 0) {
+                                priceDisplay.classList.add('text-green-200'); // Slight hint on button text if needed, or just keep it simple
+                            } else {
+                                priceDisplay.classList.remove('text-green-200');
+                            }
                         } else {
                             priceDisplay.textContent = '';
                         }
-                        
-                        // Also fetch slots if date and staff are selected (service impacts duration)
+                    }
+
+                    // Trigger Slot Fetching Logic & Pricing
+                    dateInput.addEventListener('change', fetchSlots);
+                    staffSelect.addEventListener('change', fetchSlots);
+                    serviceSelect.addEventListener('change', function() {
+                        updatePricing();
+                        // Also fetch slots if date and staff are selected
                         if (dateInput.value && staffSelect.value) {
                             fetchSlots();
                         }
                     });
+
+                    // Hook into redeem input from the other script block if it exists
+                    // Since that input is in the DOM, let's add a global listener or merge the logic.
+                    // The previous script block for redeem_points handled its own 'input' event. 
+                    // To avoid conflicts or duplication, let's attach the listener here if the element exists,
+                    // as this script block has access to 'serviceSelect' which is needed for base price.
+                    const redeemPointsInput = document.getElementById('redeem_points');
+                    if (redeemPointsInput) {
+                        redeemPointsInput.addEventListener('input', updatePricing);
+                    }
                 </script>
             </div>
         </div>

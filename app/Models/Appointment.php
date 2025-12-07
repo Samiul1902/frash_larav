@@ -15,6 +15,8 @@ class Appointment extends Model
         'status',
         'payment_method',
         'payment_status',
+        'points_redeemed', // Added
+        'discount_amount', // Added
     ];
 
     protected $casts = [

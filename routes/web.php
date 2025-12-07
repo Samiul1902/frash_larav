@@ -18,13 +18,24 @@ Route::get('/dashboard', function () {
         ->take(5)
         ->get();
 
-    return view('dashboard', compact('recent_appointments'));
+    // Calculate Total Spent based on paid invoices
+    $totalSpent = \App\Models\Invoice::whereHas('appointment', function ($query) {
+        $query->where('user_id', Auth::id());
+    })->where('status', 'paid')->sum('amount');
+
+    return view('dashboard', compact('recent_appointments', 'totalSpent'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Admin Settings Routes
+    Route::middleware(['auth', \App\Http\Middleware\RoleMiddleware::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    });
 
     // Booking Routes
     Route::resource('appointments', \App\Http\Controllers\AppointmentController::class)->only(['index', 'create', 'store', 'edit', 'update']);

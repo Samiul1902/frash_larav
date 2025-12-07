@@ -27,6 +27,7 @@
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-100">
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Service</th>
+                            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stylist</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date & Time</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Duration</th>
@@ -39,7 +40,13 @@
                             <tr class="hover:bg-gray-50 transition duration-150">
                                 <td class="px-5 py-5 bg-white text-sm">
                                     <div class="font-bold text-gray-900">{{ $appointment->service->title }}</div>
-                                    <div class="text-xs text-gray-500">৳{{ number_format($appointment->service->price) }}</div>
+                                    <div class="text-xs text-gray-500">Base: ৳{{ number_format($appointment->service->price) }}</div>
+                                </td>
+                                <td class="px-5 py-5 bg-white text-sm">
+                                    <div class="text-gray-900 font-bold">৳{{ number_format($appointment->service->price - ($appointment->discount_amount ?? 0), 2) }}</div>
+                                    @if($appointment->discount_amount > 0)
+                                        <div class="text-xs text-green-600 font-semibold">Saved ৳{{ number_format($appointment->discount_amount, 2) }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-5 bg-white text-sm">
                                     <p class="text-gray-900 whitespace-no-wrap">{{ $appointment->staff->name }}</p>
@@ -92,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-5 py-12 bg-white text-sm text-center text-gray-500">
+                                <td colspan="7" class="px-5 py-12 bg-white text-sm text-center text-gray-500">
                                     <p class="text-lg mb-2">You have no appointments yet.</p>
                                     <a href="{{ route('services.index') }}" class="text-purple-600 hover:text-purple-800 font-bold">Browse Services</a>
                                 </td>

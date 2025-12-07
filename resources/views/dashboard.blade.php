@@ -37,6 +37,17 @@
                     </a>
                 </div>
 
+                <!-- Total Spent Stat -->
+                <div class="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-purple-100 text-sm font-bold uppercase tracking-wider">Total Spent</h3>
+                        <p class="text-4xl font-extrabold mt-2">Tk {{ number_format($totalSpent ?? 0, 2) }}</p>
+                    </div>
+                    <div class="text-sm font-medium text-purple-100 mt-4">
+                        Loyalty Points: {{ Auth::user()->loyalty_points }}
+                    </div>
+                </div>
+
                 <!-- Explore Services -->
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between relative overflow-hidden group">
                     <div class="relative z-10">

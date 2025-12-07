@@ -89,6 +89,54 @@ class AppointmentController extends Controller
             return back()->withErrors(['appointment_time' => 'This time slot is already booked for the selected staff member.'])->withInput();
         }
 
+        // Redemption Logic
+        $points_redeemed = 0;
+        $discount_amount = 0;
+
+        if ($request->has('redeem_points') && is_numeric($request->redeem_points) && $request->redeem_points > 0) {
+            $user = Auth::user();
+            $available_points = $user->loyalty_points;
+            $points_to_redeem = (int) $request->redeem_points;
+            
+            // Get redemption rate
+            $redeemValue = \App\Models\Setting::getValue('loyalty_redeem_value', 10);
+
+            // Validate ownership
+            if ($points_to_redeem > $available_points) {
+                return back()->withErrors(['redeem_points' => 'You do not have enough points.'])->withInput();
+            }
+
+            // Calculate potential discount
+            $potential_discount = $points_to_redeem * $redeemValue;
+            $service_price = $service->price;
+
+            // Cap discount at service price
+            if ($potential_discount > $service_price) {
+                // Adjust points used to match service price exactly if they tried to overpay
+                // Points needed = Price / Value
+                $points_to_redeem = ceil($service_price / $redeemValue);
+                $potential_discount = $points_to_redeem * $redeemValue; 
+                // Wait, if ceil gives more value than price, we limit discount amount to price
+                // But we still deduct the calculated points. 
+                // Actually safer to cap discount amount.
+                $discount_amount = $service_price;
+            } else {
+                $discount_amount = $potential_discount;
+            }
+            
+            $points_redeemed = $points_to_redeem;
+
+            // Deduct points
+            $user->decrement('loyalty_points', $points_redeemed);
+            
+            // Log Transaction
+            $user->loyaltyTransactions()->create([
+                'points' => -$points_redeemed,
+                'type' => 'redeemed',
+                'description' => 'Redeemed for appointment #' . (Appointment::max('id') + 1), 
+            ]);
+        }
+
         // 4. Create Appointment Record
         $appointment = Appointment::create([
             'user_id' => Auth::id(),
@@ -99,6 +147,8 @@ class AppointmentController extends Controller
             'status' => 'pending',
             'payment_method' => $request->payment_method,
             'payment_status' => 'pending',
+            'points_redeemed' => $points_redeemed,
+            'discount_amount' => $discount_amount,
         ]);
 
         // 5. Notify Admins
