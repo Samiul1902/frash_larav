@@ -27,29 +27,38 @@ class AiImageController extends Controller
             return back()->with('error', 'API Key not configured.');
         }
 
-        // Logic: If image is provided, we use Gemini 1.5 Flash to analyze it first
+        // Logic: If image is provided, we try to use Gemini to analyze it
+        // If analysis fails (e.g., Key missing/invalid), we fallback to using the user's prompt directly.
         if ($request->hasFile('image_file')) {
-            $imagePath = $request->file('image_file')->getRealPath();
-            $imageData = base64_encode(file_get_contents($imagePath));
-            $mimeType = $request->file('image_file')->getMimeType();
+            try {
+                $imagePath = $request->file('image_file')->getRealPath();
+                $imageData = base64_encode(file_get_contents($imagePath));
+                $mimeType = $request->file('image_file')->getMimeType();
 
-            // Ask Gemini to describe the image based on user prompt context
-            $analysisResponse = Http::withoutVerifying()->withHeaders(['Content-Type' => 'application/json'])
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={$apiKey}", [
-                    'contents' => [
-                        [
-                            'parts' => [
-                                ['text' => "Analyze this image and the user's style request: '{$prompt}'. Create a detailed image generation prompt that captures the essence of this image but applies the requested style. output ONLY the prompt."],
-                                ['inline_data' => ['mime_type' => $mimeType, 'data' => $imageData]]
+                // Ask Gemini to describe the image based on user prompt context
+                $analysisResponse = Http::withoutVerifying()->withHeaders(['Content-Type' => 'application/json'])
+                    ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={$apiKey}", [
+                        'contents' => [
+                            [
+                                'parts' => [
+                                    ['text' => "Analyze this image and the user's style request: '{$prompt}'. Create a detailed image generation prompt that captures the essence of this image but applies the requested style. output ONLY the prompt."],
+                                    ['inline_data' => ['mime_type' => $mimeType, 'data' => $imageData]]
+                                ]
                             ]
                         ]
-                    ]
-                ]);
+                    ]);
 
-            if ($analysisResponse->successful()) {
-                $prompt = $analysisResponse->json()['candidates'][0]['content']['parts'][0]['text'];
-            } else {
-                 return back()->with('error', 'Failed to analyze uploaded image.');
+                if ($analysisResponse->successful()) {
+                    $prompt = $analysisResponse->json()['candidates'][0]['content']['parts'][0]['text'];
+                } else {
+                    // Soft fail: Just log it and continue with original prompt
+                     \Illuminate\Support\Facades\Log::warning('Image Analysis Failed: ' . $analysisResponse->body());
+                     session()->flash('info', 'Image analysis unavailable (Vision API Key Error). Generating based on text description only.');
+                }
+            } catch (\Exception $e) {
+                // Soft fail
+                \Illuminate\Support\Facades\Log::warning('Image Analysis Exception: ' . $e->getMessage());
+                session()->flash('info', 'Image analysis skipped due to error. Using text prompt.');
             }
         }
 
