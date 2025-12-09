@@ -40,35 +40,34 @@ class AiController extends Controller
         $context .= "User Question: {$userMessage}\n";
         $context .= "Answer politely and concisely directly to the customer.";
 
-        // 2. Call Gemini API
-        // Use env var first, fallback to empty string (security)
-        $apiKey = env('GEMINI_API_KEY', '');
+        // 2. Call Pollinations.ai (Free, Reliable, No Key Required)
+        // Since the user's Gemini Key is leaked/revoked, we switch to this open API.
         
-        if (!$apiKey) {
-            return response()->json(['response' => "I'm sorry, I'm not fully configured yet (Missing API Key)."]);
-        }
+        try {
+            // Construct the full prompt
+            $fullPrompt = $context . "\nUser: " . $userMessage . "\nAI:";
+            
+            // Pollinations Text API supports POST for longer prompts
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->post('https://text.pollinations.ai/', [
+                'messages' => [
+                    ['role' => 'user', 'content' => $fullPrompt]
+                ],
+                'model' => 'openai' // Uses a smart model (usually GPT-4o-mini or similar)
+            ]);
 
-        $response = Http::withoutVerifying()->withHeaders([
-            'Content-Type' => 'application/json',
-        ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $context]
-                    ]
-                ]
-            ]
-        ]);
-
-        if ($response->successful()) {
-            $data = $response->json();
-            $aiReply = $data['candidates'][0]['content']['parts'][0]['text'] ?? "I'm not sure how to answer that.";
-            return response()->json(['response' => $aiReply]);
-        } else {
-            // Debugging: Return actual error from API
-            return response()->json([
-                'response' => "Error: " . $response->status() . " - " . $response->body()
-            ], $response->status());
+            if ($response->successful()) {
+                // Pollinations might return raw text or OpenAI format depending on endpoint behavior.
+                // Usually direct POST to root returns raw text or stream. 
+                // Let's handle string response safely.
+                $aiReply = $response->body();
+                return response()->json(['response' => $aiReply]);
+            } else {
+                return response()->json(['response' => "Sorry, I'm having trouble connecting to the brain. Please try again."]);
+            }
+        } catch (\Exception $e) {
+             return response()->json(['response' => "Error: " . $e->getMessage()]);
         }
     }
 }
